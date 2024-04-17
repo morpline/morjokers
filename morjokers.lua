@@ -81,13 +81,24 @@ function addjoker(joker)
     G.jokers:emplace(card)
     G.GAME.used_jokers[joker] = true
 end
+mpjokers = {}
+mpcards = {}
+function calcMPjokers()
+    for k, v in pairs(G.P_CENTERS) do
+        -- print("morjokers.lua","looking at "..k)
+        if not (string.find(k,"j_") == nil) then
+            print("morjokers.lua","adding"..k.."to mpjokers")
+            table.insert(mpjokers,k)
+        end
+    end
+end
 
 local jokers = {
     copymachine = {
         name = "Copy Machine",
         text = {
-            "Randomly copies the effects of other",
-            "{C:attention}Jokers{}"
+            "Randomly copies the effects of your",
+            "other {C:attention}Jokers{}"
 		},
 		ability = {extra={name = "Copy Machine"}},
 		pos = { x = 1, y = 0 },
@@ -121,8 +132,57 @@ local jokers = {
             return {self.ability.extra.name}
         end        
 	},
+    mysteryportal = {
+        name = "Mystery Portal",
+        text = {
+            "Does something random based on other",
+            "{C:attention}Jokers{}",
+            "Prepare for a lot of clicking..."
+		},
+		ability = {extra={name = "Mystery Portal"}},
+		pos = { x = 6, y = 4 },
+        rarity=1,
+        cost = 4,
+        blueprint_compat=false,
+        eternal_compat=true,
+        effect=nil,
+        soul_pos=nil,
+        calculate = function(self,context)
+            if self.ability.set == "Joker" and not self.debuff then
+                local other_joker = mpjokers[math.random(1,#mpjokers)]
+                -- print(" morjokers mp copying out of "..tostring(#mpjokers),other_joker)
+                if other_joker then
+                    -- fakemessage(G.P_CENTERS[other_joker].name,self,G.C.BLUE)
+                    self.ability.extra.name= G.P_CENTERS[other_joker].name
+                    context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+                    context.blueprint_card = context.blueprint_card or self
+                    -- if context.blueprint > #G.jokers.cards + 1 then return end
+                    oj = mpcards[other_joker]
+                    if oj == nil then
+                        oj = Card(0,0,0,0,self,G.P_CENTERS[other_joker])
+                        -- table.insert(cards,oj)
+                        mpcards[other_joker] = oj
+                    end
+                    local other_joker_ret = oj:calculate_joker(context)
+                    
+                    if other_joker_ret then 
+                        other_joker_ret.card = context.blueprint_card or self
+                        other_joker_ret.colour = G.C.BLUE
+                        return other_joker_ret
+                    end
+                else
+                    fakemessage("Error!",self,G.C.RED)
+
+                end
+            end
+        end,
+        loc_def=function(self)
+            return {self.ability.extra.name}
+        end        
+	},
 }
 function SMODS.INIT.MorJokers()
+    calcMPjokers()
     --Create and register jokers
     for k, v in pairs(jokers) do
         local joker = SMODS.Joker:new(v.name, k, v.ability, v.pos, { name = v.name, text = v.text }, v.rarity, v.cost, true, true, v.blueprint_compat, v.eternal_compat, v.effect, "MorJokers",v.soul_pos)
