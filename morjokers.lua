@@ -152,6 +152,7 @@ local jokers = {
                 local other_joker = mpjokers[math.random(1,#mpjokers)]
                 -- print(" morjokers mp copying out of "..tostring(#mpjokers),other_joker)
                 if other_joker then
+                    play_sound("button")
                     -- fakemessage(G.P_CENTERS[other_joker].name,self,G.C.BLUE)
                     self.ability.extra.name= G.P_CENTERS[other_joker].name
                     context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
@@ -171,6 +172,7 @@ local jokers = {
                         return other_joker_ret
                     end
                 else
+                    play_sound("gold_seal")
                     fakemessage("Error!",self,G.C.RED)
 
                 end
@@ -178,6 +180,64 @@ local jokers = {
         end,
         loc_def=function(self)
             return {self.ability.extra.name}
+        end        
+	},
+    betterboots = {
+        name = "Better Boots",
+        text = {
+            "Upgrades already upgraded cards by 25",
+		},
+		ability = {extra={name = "Better Boots"}},
+		pos = { x = 0, y = 2 },
+        rarity=3,
+        cost = 7,
+        blueprint_compat=false,
+        eternal_compat=true,
+        effect=nil,
+        soul_pos=nil,
+        calculate = function(self,context)
+            if self.ability.set == "Joker" and not self.debuff then
+                if context.individual then
+                    if context.cardarea == G.play then
+                        if not (context.other_card.ability.perma_bonus == 0) then
+                            context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + 25
+                            fakemessage("Upgrade!",self,G.C.ORANGE)
+                        end 
+                    end
+                end
+            end
+        end,
+        loc_def=function(self)
+            return {self.ability.extra.name}
+        end        
+	},
+    everythingjoker = {
+        name = "Everything Joker",
+        text = {
+            "Played cards give {C:mult}+#2# Mult{}",
+		},
+		ability = {extra={name = "everything joker",mult=4}},
+		pos = { x = 1, y = 2 },
+        rarity=2,
+        cost = 6,
+        blueprint_compat=true,
+        eternal_compat=true,
+        effect=nil,
+        soul_pos=nil,
+        calculate = function(self,context)
+            if self.ability.set == "Joker" and not self.debuff then
+                if context.individual then
+                    if context.cardarea == G.play then
+                        return {
+                            mult = self.ability.extra.mult,
+                            card = self
+                        }
+                    end
+                end
+            end
+        end,
+        loc_def=function(self)
+            return {self.ability.extra.name,self.ability.extra.mult}
         end        
 	},
 }
