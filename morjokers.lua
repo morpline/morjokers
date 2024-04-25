@@ -87,7 +87,7 @@ function calcMPjokers()
     for k, v in pairs(G.P_CENTERS) do
         -- print("morjokers.lua","looking at "..k)
         if not (string.find(k,"j_") == nil) then
-            print("morjokers.lua","adding"..k.."to mpjokers")
+            -- print("morjokers.lua","adding"..k.."to mpjokers")
             table.insert(mpjokers,k)
         end
     end
@@ -240,6 +240,44 @@ local jokers = {
             return {self.ability.extra.name,self.ability.extra.mult}
         end        
 	},
+    sevenoclocknews = {
+        name = "Seven O'Clock News",
+        text = {
+            "Played {C:attention}7s{} without",
+            "a seal have a {C:green}#1# in #2#{}",
+            "chance to recieve a {C:purple}random seal{}.",
+            "{C:inactive}Idea by {C:green}NEWTU{C:inactive} on the Balatro Discord"
+		},
+		ability = {extra={name = "sevenoclocknews", chance = 2}},
+		pos = { x = 2, y = 2 },
+        rarity=1,
+        cost = 5,
+        blueprint_compat=true,
+        eternal_compat=true,
+        effect=nil,
+        soul_pos=nil,
+        calculate = function(self,context)
+            if self.ability.set == "Joker" and not self.debuff and context.individual and context.cardarea == G.play and (context.other_card:get_id() == 7)and (context.other_card:get_seal() == nil) and not (context.other_card.debuff) and (math.random((G.GAME and G.GAME.probabilities.normal or 1),2)==2) then
+                local seal_type = pseudorandom(pseudoseed('stdsealtype'))
+                if seal_type > 0.75 then 
+                    context.other_card:set_seal('Red')
+                elseif seal_type > 0.5 then 
+                    context.other_card:set_seal('Blue')
+                elseif seal_type > 0.25 then 
+                    context.other_card:set_seal('Gold')
+                else 
+                    context.other_card:set_seal('Purple')
+                end
+                fakemessage("Breaking!",self,G.C.ORANGE)
+                delay(0.6)
+            end
+        end,
+        loc_def=function(self)
+            return {''..(G.GAME and G.GAME.probabilities.normal or 1),self.ability.extra.chance}
+        end
+
+    }
+
 }
 function SMODS.INIT.MorJokers()
     calcMPjokers()

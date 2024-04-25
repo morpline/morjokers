@@ -20,6 +20,13 @@ function addjoker(joker,negative)
     G.GAME.used_jokers[joker] = true
 end
 
+function fakemessage(_message,_card,_colour)
+    G.E_MANAGER:add_event(Event({ trigger = 'after',delay = 0.15,       
+        func = function() card_eval_status_text(_card, 'extra', nil, nil, nil, {message = _message, colour = _colour, instant=true}); return true
+        end}))
+    return
+end
+
 
 -- SMODS.Tarot:new(name, slug, config, pos, loc_txt, cost, cost_mult, effect, consumeable, discovered, atlas)
 
@@ -27,13 +34,13 @@ local tarots = {
     portaljar = {
         name = "Portal Jar",
         text = {
-            "Creates 3(?) {C:attention}Mysterious Portal",
+            "Creates a {C:attention}Mysterious Portal",
             "{C:red}Enjoy!",
             "{C:inactive}Will create regardless of room.",
 		},
 		config = {},
 		pos = { x = 6, y = 5 },
-        cost = 6,
+        cost = 3,
         cost_mult = 1,
         effect=nil,
         consumable=true,
@@ -46,12 +53,49 @@ local tarots = {
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                     play_sound('polychrome1')
                     addjoker("j_mysteryportal")
-                    addjoker("j_mysteryportal")
-                    addjoker("j_mysteryportal")
-                    if(math.random(1,4) == 1) then
-                        addjoker("j_mysteryportal")
-                    end
                     self:juice_up(0.3, 0.5)
+                    return true end }))
+                delay(0.6)
+            end
+        end      
+	},
+    coolhat = {
+        name = "Cool Hat",
+        text = {
+            "Upgrades any and all",
+            "{C:attention}Everything Joker{} by",
+            "{C:mult}+4{} Mult",
+            "{C:inactive}Must have at least one"
+		},
+		config = {},
+		pos = { x = 1, y = 3 },
+        cost = 3,
+        cost_mult = 1,
+        effect=nil,
+        consumable=true,
+        discovered=true,
+        can_use = function() 
+            hasj = false
+            for i= 1, #G.jokers.cards do
+                other_joker = G.jokers.cards[i]
+                print(other_joker.ability.extra.name)
+                if string.match(other_joker.ability.extra.name, "everything joker") then
+                    hasj = true
+                end        
+            end
+            return hasj
+        end,
+        use = function(self, area, copier)
+            if self.ability.name == 'Cool Hat' then
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+                    hasj = false
+                    for i= 1, #G.jokers.cards do
+                        other_joker = G.jokers.cards[i]
+                        if string.match(other_joker.ability.extra.name, "everything joker") then
+                            other_joker.ability.extra.mult = other_joker.ability.extra.mult + 4
+                        end        
+                        fakemessage("Upgrade!",self,G.C.RED)
+                    end
                     return true end }))
                 delay(0.6)
             end
@@ -59,7 +103,7 @@ local tarots = {
 	},
 }
 
-function SMODS.INIT.ThemedTarots()    
+function SMODS.INIT.MorJokerTarots()    
     G.localization.descriptions.Other["mor_"] = {
         name = "Mor",
         text = {
