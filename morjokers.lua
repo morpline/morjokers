@@ -1,7 +1,7 @@
 --- STEAMODDED HEADER
 --- MOD_NAME: Mor jokers
 --- MOD_ID: morjkrs
---- MOD_AUTHOR: [Morpline, Blizzow]
+--- MOD_AUTHOR: [Morpline]
 --- MOD_DESCRIPTION: Adds mor jokers. Thanks to Blizzow for the joker code. Idk if he was the original author, but I stole it from him. 
 
 ----------------------------------------------
@@ -185,9 +185,9 @@ local jokers = {
     betterboots = {
         name = "Better Boots",
         text = {
-            "Upgrades already upgraded cards by 25",
+            "Upgrades already upgraded cards by #1#",
 		},
-		ability = {extra={name = "Better Boots"}},
+		ability = {extra={name = "Better Boots",chips = 25}},
 		pos = { x = 0, y = 2 },
         rarity=3,
         cost = 7,
@@ -200,15 +200,16 @@ local jokers = {
                 if context.individual then
                     if context.cardarea == G.play then
                         if not (context.other_card.ability.perma_bonus == 0) then
-                            context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + 25
-                            fakemessage("Upgrade!",self,G.C.ORANGE)
+                            context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + self.ability.extra.chips
+                            fakemessage("Upgrade!",context.other_card,G.C.ORANGE)
+                            delay(0.6)
                         end 
                     end
                 end
             end
         end,
         loc_def=function(self)
-            return {self.ability.extra.name}
+            return {self.ability.extra.chips}
         end        
 	},
     everythingjoker = {
@@ -243,14 +244,14 @@ local jokers = {
     sevenoclocknews = {
         name = "Seven O'Clock News",
         text = {
-            "Played {C:attention}7s{} without",
+            "Scored {C:attention}7s{} without",
             "a seal have a {C:green}#1# in #2#{}",
             "chance to recieve a {C:purple}random seal{}.",
             "{C:inactive}Idea by {C:green}NEWTU{C:inactive} on the Balatro Discord"
 		},
 		ability = {extra={name = "sevenoclocknews", chance = 2}},
 		pos = { x = 2, y = 2 },
-        rarity=1,
+        rarity=2,
         cost = 5,
         blueprint_compat=true,
         eternal_compat=true,
@@ -276,7 +277,34 @@ local jokers = {
             return {''..(G.GAME and G.GAME.probabilities.normal or 1),self.ability.extra.chance}
         end
 
-    }
+    },
+    -- extrabattery = {
+    --     name = "Extra Battery",
+    --     text = {
+    --         "{C:attention}Retrigger all cards #1# time{}",
+	-- 	},
+	-- 	ability = {extra={repeats=1}},
+	-- 	pos = { x = 4, y = 0 },
+    --     rarity=4,
+    --     cost = 10,
+    --     blueprint_compat=true,
+    --     eternal_compat=true,
+    --     effect=nil,
+    --     soul_pos=nil,
+    --     calculate = function(self,context)
+    --         if self.ability.set == "Joker" and not self.debuff and context.repetition and context.cardarea == G.play and self.ability.name == 'Extra Battery'then
+    --             return {
+    --                 message = localize('k_again_ex'),
+    --                 repetitions = self.ability.extrarepeats,
+    --                 card = context.other_card
+    --             }
+    --         end
+    --     end,
+    --     loc_def=function(self)
+    --         return {self.ability.extrarepeats}
+    --     end
+
+    -- }
 
 }
 function SMODS.INIT.MorJokers()
