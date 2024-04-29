@@ -278,33 +278,33 @@ local jokers = {
         end
 
     },
-    -- extrabattery = {
-    --     name = "Extra Battery",
-    --     text = {
-    --         "{C:attention}Retrigger all cards #1# time{}",
-	-- 	},
-	-- 	ability = {extra={repeats=1}},
-	-- 	pos = { x = 4, y = 0 },
-    --     rarity=4,
-    --     cost = 10,
-    --     blueprint_compat=true,
-    --     eternal_compat=true,
-    --     effect=nil,
-    --     soul_pos=nil,
-    --     calculate = function(self,context)
-    --         if self.ability.set == "Joker" and not self.debuff and context.repetition and context.cardarea == G.play and self.ability.name == 'Extra Battery'then
-    --             return {
-    --                 message = localize('k_again_ex'),
-    --                 repetitions = self.ability.extrarepeats,
-    --                 card = context.other_card
-    --             }
-    --         end
-    --     end,
-    --     loc_def=function(self)
-    --         return {self.ability.extrarepeats}
-    --     end
+    extrabattery = {
+        name = "Extra Battery",
+        text = {
+            "{C:attention}Retrigger all played cards #1# time{}",
+		},
+		ability = {extra={repeats=1}},
+		pos = { x = 4, y = 0 },
+        rarity=4,
+        cost = 10,
+        blueprint_compat=true,
+        eternal_compat=true,
+        effect=nil,
+        soul_pos=nil,
+        calculate = function(self,context)
+            if self.ability.set == "Joker" and not self.debuff and context.repetition and context.cardarea == G.play and self.ability.name == 'Extra Battery'then
+                return {
+                    message = localize('k_again_ex'),
+                    repetitions = self.ability.extra.repeats,
+                    card = context.other_card
+                }
+            end
+        end,
+        loc_def=function(self)
+            return {self.ability.extra.repeats}
+        end
 
-    -- }
+    }
 
 }
 function SMODS.INIT.MorJokers()

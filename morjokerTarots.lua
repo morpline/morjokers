@@ -78,10 +78,15 @@ local tarots = {
             hasj = false
             for i= 1, #G.jokers.cards do
                 other_joker = G.jokers.cards[i]
-                print(other_joker.ability.extra.name)
-                if string.match(other_joker.ability.extra.name, "everything joker") then
-                    hasj = true
-                end        
+                if (type(other_joker.ability.extra) == "table") then
+                    if(type(other_joker.ability.extra.name) == "string") then
+                        
+                        print(other_joker.ability.extra.name)
+                        if string.match(other_joker.ability.extra.name, "everything joker") then
+                            hasj = true
+                        end        
+                    end
+                end
             end
             return hasj
         end,
@@ -91,10 +96,14 @@ local tarots = {
                     hasj = false
                     for i= 1, #G.jokers.cards do
                         other_joker = G.jokers.cards[i]
-                        if string.match(other_joker.ability.extra.name, "everything joker") then
-                            other_joker.ability.extra.mult = other_joker.ability.extra.mult + 4
-                            fakemessage("Upgrade!",other_joker,G.C.RED)
-                        end        
+                        if (type(other_joker.ability.extra) == "table") then
+                            if(type(other_joker.ability.extra.name) == "string") then
+                                if string.match(other_joker.ability.extra.name, "everything joker") then
+                                    other_joker.ability.extra.mult = other_joker.ability.extra.mult + 4
+                                    fakemessage("Upgrade!",other_joker,G.C.RED)
+                                end   
+                            end
+                        end     
                     end
                     return true end }))
                 delay(0.6)
