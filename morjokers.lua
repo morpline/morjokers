@@ -110,10 +110,7 @@ local jokers = {
         soul_pos=nil,
         calculate = function(self,context)
             if self.ability.set == "Joker" and not self.debuff then
-                local other_joker = nil
-                for i = 1, #G.jokers.cards do
-                    if G.jokers.cards[i] == self then other_joker = G.jokers.cards[math.random(1,#G.jokers.cards)] end
-                end
+                local other_joker = pseudorandom_element(G.jokers.cards,pseudoseed("copier"))
                 if other_joker and other_joker ~= self then
                     self.ability.extra.name= other_joker.ability.name
                     context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
@@ -137,7 +134,7 @@ local jokers = {
         text = {
             "Does something random based on other",
             "{C:attention}Jokers{}",
-            "Prepare for a lot of clicking..."
+            "{C:inactive}Copied #1# other jokers"
 		},
 		ability = {extra={name = "Mystery Portal"}},
 		pos = { x = 6, y = 4 },
@@ -149,7 +146,7 @@ local jokers = {
         soul_pos=nil,
         calculate = function(self,context)
             if self.ability.set == "Joker" and not self.debuff then
-                local other_joker = mpjokers[math.random(1,#mpjokers)]
+                local other_joker = pseudorandom_element(mpjokers,pseudoseed("portal"))
                 -- print(" morjokers mp copying out of "..tostring(#mpjokers),other_joker)
                 if other_joker then
                     play_sound("button")
@@ -179,7 +176,7 @@ local jokers = {
             end
         end,
         loc_def=function(self)
-            return {self.ability.extra.name}
+            return {#mpcards}
         end        
 	},
     betterboots = {

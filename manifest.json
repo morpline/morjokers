@@ -1,0 +1,7 @@
+{
+    "name":"Mor_Jokers",
+    "description":"Add Mor Jokers to Balatro",
+    "version_number":"4.0.0",
+    "dependencies":[],
+    "website_url":"https://github.com/morpline/morjokers"
+}
