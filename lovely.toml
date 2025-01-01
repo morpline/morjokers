@@ -1,0 +1,19 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = "['en-us'] = {font = 1, label = \"English\", key = 'en-us', button = \"Language Feedback\", warning = {'This language is still in Beta. To help us','improve it, please click on the feedback button.', 'Click again to confirm'}},"
+position = 'after'
+payload = "['en-mn'] = {font = 1, label = \"MorJokers\", key = 'en-mn', button = \"Complainment\", warning = {'This language is still in Beta. To help us','improve it, please click on the feedback button.', 'Click again to confirm'}},"
+match_indent = true
+    
+
+[[patches]]
+[patches.module]
+source = "localization/en-mn.lua"
+before = "localization/en-us.lua"
+name = "nativefs"

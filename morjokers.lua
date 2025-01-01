@@ -321,6 +321,7 @@ function SMODS.INIT.MorJokers()
     end
     --Create sprite atlas
     SMODS.Sprite:new("MorJokers", SMODS.findModByID("morjkrs").path, "MorJokers.png", 71, 95, "asset_atli"):register()
+
 end	
 ----------------------------------------------
 ------------MOD CODE END----------------------
