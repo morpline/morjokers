@@ -81,17 +81,17 @@ function addjoker(joker)
     G.jokers:emplace(card)
     G.GAME.used_jokers[joker] = true
 end
-mpjokers = {}
-mpcards = {}
-function calcMPjokers()
-    for k, v in pairs(G.P_CENTERS) do
-        -- print("morjokers.lua","looking at "..k)
-        if not (string.find(k,"j_") == nil) then
-            -- print("morjokers.lua","adding"..k.."to mpjokers")
-            table.insert(mpjokers,k)
-        end
-    end
-end
+-- mpjokers = {}
+-- mpcards = {}
+-- function calcMPjokers()
+--     for k, v in pairs(G.P_CENTERS) do
+--         -- print("morjokers.lua","looking at "..k)
+--         if not (string.find(k,"j_") == nil) then
+--             -- print("morjokers.lua","adding"..k.."to mpjokers")
+--             table.insert(mpjokers,k)
+--         end
+--     end
+-- end
 
 local jokers = {
     copymachine = {
@@ -102,7 +102,7 @@ local jokers = {
 		},
 		ability = {extra={name = "Copy Machine"}},
 		pos = { x = 1, y = 0 },
-        rarity=1,
+        rarity=2,
         cost = 6,
         blueprint_compat=true,
         eternal_compat=true,
@@ -129,56 +129,56 @@ local jokers = {
             return {self.ability.extra.name}
         end        
 	},
-    mysteryportal = {
-        name = "Mystery Portal",
-        text = {
-            "Does something random based on other",
-            "{C:attention}Jokers{}",
-            "{C:inactive}Copied #1# other jokers"
-		},
-		ability = {extra={name = "Mystery Portal"}},
-		pos = { x = 6, y = 4 },
-        rarity=1,
-        cost = 4,
-        blueprint_compat=false,
-        eternal_compat=true,
-        effect=nil,
-        soul_pos=nil,
-        calculate = function(self,context)
-            if self.ability.set == "Joker" and not self.debuff then
-                local other_joker = pseudorandom_element(mpjokers,pseudoseed("portal"))
-                -- print(" morjokers mp copying out of "..tostring(#mpjokers),other_joker)
-                if other_joker then
-                    play_sound("button")
-                    -- fakemessage(G.P_CENTERS[other_joker].name,self,G.C.BLUE)
-                    self.ability.extra.name= G.P_CENTERS[other_joker].name
-                    context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
-                    context.blueprint_card = context.blueprint_card or self
-                    -- if context.blueprint > #G.jokers.cards + 1 then return end
-                    oj = mpcards[other_joker]
-                    if oj == nil then
-                        oj = Card(0,0,0,0,self,G.P_CENTERS[other_joker])
-                        -- table.insert(cards,oj)
-                        mpcards[other_joker] = oj
-                    end
-                    local other_joker_ret = oj:calculate_joker(context)
+    -- mysteryportal = {
+    --     name = "Mystery Portal",
+    --     text = {
+    --         "Does something random based on other",
+    --         "{C:attention}Jokers{}",
+    --         "{C:inactive}Copied #1# other jokers"
+	-- 	},
+	-- 	ability = {extra={name = "Mystery Portal"}},
+	-- 	pos = { x = 6, y = 4 },
+    --     rarity=1,
+    --     cost = 4,
+    --     blueprint_compat=false,
+    --     eternal_compat=true,
+    --     effect=nil,
+    --     soul_pos=nil,
+    --     calculate = function(self,context)
+    --         if self.ability.set == "Joker" and not self.debuff then
+    --             local other_joker = pseudorandom_element(mpjokers,pseudoseed("portal"))
+    --             -- print(" morjokers mp copying out of "..tostring(#mpjokers),other_joker)
+    --             if other_joker then
+    --                 play_sound("button")
+    --                 -- fakemessage(G.P_CENTERS[other_joker].name,self,G.C.BLUE)
+    --                 self.ability.extra.name= G.P_CENTERS[other_joker].name
+    --                 context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+    --                 context.blueprint_card = context.blueprint_card or self
+    --                 -- if context.blueprint > #G.jokers.cards + 1 then return end
+    --                 oj = mpcards[other_joker]
+    --                 if oj == nil then
+    --                     oj = Card(0,0,0,0,self,G.P_CENTERS[other_joker])
+    --                     -- table.insert(cards,oj)
+    --                     mpcards[other_joker] = oj
+    --                 end
+    --                 local other_joker_ret = oj:calculate_joker(context)
                     
-                    if other_joker_ret then 
-                        other_joker_ret.card = context.blueprint_card or self
-                        other_joker_ret.colour = G.C.BLUE
-                        return other_joker_ret
-                    end
-                else
-                    play_sound("gold_seal")
-                    fakemessage("Error!",self,G.C.RED)
+    --                 if other_joker_ret then 
+    --                     other_joker_ret.card = context.blueprint_card or self
+    --                     other_joker_ret.colour = G.C.BLUE
+    --                     return other_joker_ret
+    --                 end
+    --             else
+    --                 play_sound("gold_seal")
+    --                 fakemessage("Error!",self,G.C.RED)
 
-                end
-            end
-        end,
-        loc_def=function(self)
-            return {#mpcards}
-        end        
-	},
+    --             end
+    --         end
+    --     end,
+    --     loc_def=function(self)
+    --         return {#mpcards}
+    --     end        
+	-- },
     betterboots = {
         name = "Better Boots",
         text = {
@@ -278,11 +278,13 @@ local jokers = {
     extrabattery = {
         name = "Extra Battery",
         text = {
-            "{C:attention}Retrigger all played cards #1# time{}",
+            "Retrigger all played cards #1# time",
+            "+#4# retrigger every #2# rounds",
+            "{C:inactive}Currently #3# of #2#{}"
 		},
-		ability = {extra={repeats=1}},
+		ability = {extra={repeats=0, req = 3, current = 0, upgrade = 1}},
 		pos = { x = 4, y = 0 },
-        rarity=4,
+        rarity=3,
         cost = 10,
         blueprint_compat=true,
         eternal_compat=true,
@@ -296,16 +298,30 @@ local jokers = {
                     card = context.other_card
                 }
             end
+            if self.ability.set == "Joker" and not self.debuff and context.end_of_round and context.cardarea == G.play and self.ability.name == 'Extra Battery'then
+                self.ability.extra.current = self.ability.extra.current + 1
+                if( self.ability.extra.current > self.ability.extra.req) then
+                    self.ability.extra.repeats = self.ability.extra.repeats + self.ability.extra.upgrade
+                    self.ability.extra.current = self.ability.extra.current - self.ability.extra.req
+                    return {
+                        message = localize("k_upgrade_ex")
+                    }
+                else
+                    return {
+                        message = ""..self.ability.extra.current.."/"..self.ability.extra.req
+                    }
+                end
+            end
         end,
         loc_def=function(self)
-            return {self.ability.extra.repeats}
+            return {self.ability.extra.repeats,self.ability.extra.req, self.ability.extra.current, self.ability.extra.upgrade}
         end
 
     }
 
 }
 function SMODS.INIT.MorJokers()
-    calcMPjokers()
+    -- calcMPjokers()
     --Create and register jokers
     for k, v in pairs(jokers) do
         local joker = SMODS.Joker:new(v.name, k, v.ability, v.pos, { name = v.name, text = v.text }, v.rarity, v.cost, true, true, v.blueprint_compat, v.eternal_compat, v.effect, "MorJokers",v.soul_pos)
